@@ -27,7 +27,10 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "stock-prediction-portal-c6ev.onrender.com",
+    ".onrender.com",
+]
 
 
 # Application definition
@@ -132,11 +135,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CORS_ALLOWED_ORIGINS = [
-    'stock-analytics-platform.netlify.app'
+    "https://stock-analytics-platform.netlify.app",
 ]
 CSRF_TRUSTED_ORIGINS = ["https://stock-prediction-portal-c6ev.onrender.com",
-                        "stock-analytics-platform.netlify.app"
+                        "https://stock-analytics-platform.netlify.app"
                         ]
+
+CORS_ALLOW_HEADERS = [
+    "authorization",
+    "content-type",
+    "accept",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
 
 
 
