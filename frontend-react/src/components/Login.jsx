@@ -1,45 +1,40 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner } from '@fortawesome/free-solid-svg-icons'
-import { useContext, useState } from 'react';
-import axios from 'axios';
-import {useNavigate} from 'react-router-dom'
-import { AuthContext } from '../AuthProvider';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { useContext, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../AuthProvider";
+import axiosInstance from "../axiosInstance";
 
 const Login = () => {
+	const [username, setUsername] = useState("");
+	const [password, setPassword] = useState("");
+	const [loading, setLoading] = useState(false);
+	const navigate = useNavigate();
+	const [error, setError] = useState("");
 
-        const [username, setUsername] = useState("");
-        const [password, setPassword] = useState("");
-        const [loading, setLoading] = useState(false);
-        const navigate = useNavigate()
-        const [error,setError] = useState('')
+	const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
 
-        const {isLoggedIn, setIsLoggedIn} = useContext(AuthContext) 
+	const handleLogin = async (e) => {
+		e.preventDefault();
+		setLoading(true);
 
+		const userData = { username, password };
 
-        const handleLogin = async (e) => {
-            e.preventDefault()
-            setLoading(true)
-
-            const userData = {username, password}
-
-            try{
-                const response = await axios.post('http://127.0.0.1:8000/api/v1/token/',userData)
-                localStorage.setItem('accessToken',response.data.access)
-                localStorage.setItem('refreshToken',response.data.refresh)
-                console.log('successfully logged');
-                setIsLoggedIn(true)
-                navigate('/dashboard')
-                
-                
-            }catch(error){
-                console.error('Invalid credentials');
-                setError('Invalid credentials')
-                
-            }finally{
-                setLoading(false)
-            }
-            
-        }
+		try {
+			const response = await axiosInstance.post("/token/", userData);
+			localStorage.setItem("accessToken", response.data.access);
+			localStorage.setItem("refreshToken", response.data.refresh);
+			console.log("successfully logged");
+			setIsLoggedIn(true);
+			navigate("/dashboard");
+		} catch (error) {
+			console.error("Invalid credentials");
+			setError("Invalid credentials");
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	return (
 		<>
@@ -50,7 +45,7 @@ const Login = () => {
 							{" "}
 							Portal Login Process{" "}
 						</h3>
-						<form onSubmit={handleLogin} >
+						<form onSubmit={handleLogin}>
 							<div className="mb-3">
 								<input
 									type="text"
@@ -61,7 +56,6 @@ const Login = () => {
 										setUsername(e.target.value)
 									}
 								/>
-
 							</div>
 
 							<div className="mb-3">
@@ -74,11 +68,11 @@ const Login = () => {
 										setPassword(e.target.value)
 									}
 								/>
-
-
 							</div>
 
-                            {error && <div className='text-danger' >{error}</div>} 
+							{error && (
+								<div className="text-danger">{error}</div>
+							)}
 
 							{loading ? (
 								<button

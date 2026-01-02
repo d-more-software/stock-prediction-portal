@@ -7,6 +7,8 @@ const axiosInstance = axios.create({
 		"Content-Type": "application/json",
 	},
 });
+console.log("API BASE =", import.meta.env.VITE_BACKEND_BASE_API);
+
 
 //Request Interceptor
 
