@@ -132,9 +132,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173'
+    'stock-analytics-platform.netlify.app'
 ]
-CSRF_TRUSTED_ORIGINS = ["https://*.onrender.com"]
+CSRF_TRUSTED_ORIGINS = ["https://stock-prediction-portal-c6ev.onrender.com",
+                        "stock-analytics-platform.netlify.app"
+                        ]
 
 
 
