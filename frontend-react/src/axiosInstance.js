@@ -36,13 +36,13 @@ axiosInstance.interceptors.response.use(
 		if (error.response.status === 401 && !originalRequest.retry) {
 			originalRequest.retry === true;
 			const refreshToken = localStorage.getItem("refreshToken");
-			// console.log(originalRequest);
+	
 
 			try {
 				const response = await axiosInstance.post("/token/refresh/", {
 					refresh: refreshToken,
 				});
-                // console.log(response.data.access);
+ 
                 
 				localStorage.setItem("accessToken", response.data.access);
 				originalRequest.headers[

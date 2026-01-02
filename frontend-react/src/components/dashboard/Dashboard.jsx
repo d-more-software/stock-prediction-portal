@@ -33,7 +33,6 @@ const Dashboard = () => {
 			const response = await axiosInstance.post("/predict/", {
 				ticker: ticker,
 			});
-			console.log(response.data);
             const backendRoot = import.meta.env.VITE_BACKEND_ROOT
             const plotUrl = `${backendRoot}${response.data.plot_img}`
             const ma100Url = `${backendRoot}${response.data.plot_100_dma}`
