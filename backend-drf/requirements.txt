@@ -12,6 +12,7 @@ Django==5.2.7
 django-cors-headers==4.9.0
 djangorestframework==3.16.1
 djangorestframework_simplejwt==5.5.1
+dj-database-url==3.0.1
 flatbuffers==25.9.23
 fonttools==4.60.1
 frozendict==2.4.6
