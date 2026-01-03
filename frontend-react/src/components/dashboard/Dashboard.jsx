@@ -5,15 +5,39 @@ const Dashboard = () => {
   const [plots, setPlots] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authorized, setAuthorized] = useState(true); // pour savoir si JWT est valide
 
   useEffect(() => {
     const fetchPlots = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
-        const response = await axiosInstance.get("/plots/");    
+        const accessToken = localStorage.getItem("access_token");
+
+        if (!accessToken) {
+          setAuthorized(false);
+          setError("You must be logged in to view this page.");
+          setLoading(false);
+          return;
+        }
+
+        // Ajoute le JWT dans le header Authorization
+        const response = await axiosInstance.get("/plots/", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
         setPlots(response.data.plots);
       } catch (err) {
-        console.error("API request error:", err);
-        setError("Erreur lors de la récupération des plots depuis le backend.");
+        console.error("API request error:", err.response || err);
+        setError(
+          err.response?.status === 401
+            ? "Session expired. Please log in again."
+            : "Erreur lors de la récupération des plots."
+        );
+        setAuthorized(false);
       } finally {
         setLoading(false);
       }
@@ -24,6 +48,7 @@ const Dashboard = () => {
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div className="text-danger">{error}</div>;
+  if (!authorized) return <div className="text-warning">Access denied. Please log in.</div>;
 
   return (
     <div className="container my-5">

@@ -1,135 +1,90 @@
 import { useState } from "react";
-import axios from "axios";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner } from '@fortawesome/free-solid-svg-icons'
 import axiosInstance from "../axiosInstance";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 const Register = () => {
-	const [username, setUsername] = useState("");
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [errors, setErrors] = useState({});
-	const [success, setSuccess] = useState(false);
-	const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-	const handleRegistration = async (e) => {
-		e.preventDefault();
-		setLoading(true);
+  const handleRegistration = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrors({});
+    setSuccess(false);
 
-		const userData = {
-			username,
-			email,
-			password,
-		};
+    try {
+      await axiosInstance.post('/register/', { username, email, password });
 
-		try {
-			const response = await axiosInstance.post('/token/', userData);
 
-			console.log(response.data);
-			setErrors({});
-            setSuccess(true)
-            
-			setTimeout(() => {
-                setSuccess(false);
-			}, 1000);
-			console.log("successful registrated");
-		} catch (error) {
-			setErrors(error.response.data);
-			console.log("Registration error:", error.response.data);
-		} finally {
-			setLoading(false);
-		}
-	};
+      const tokenResponse = await axiosInstance.post('/token/', { username, password });
+      const accessToken = tokenResponse.data.access;
+      const refreshToken = tokenResponse.data.refresh;
 
-	return (
-		<>
-			<div className="container">
-				<div className="row justify-content-center">
-					<div className="col-md-6 bg-light-dark p-5 rounded">
-						<h3 className="text-light text-center mb-4">
-							{" "}
-							Create an account{" "}
-						</h3>
-						<form onSubmit={handleRegistration}>
-							<div className="mb-3">
-								<input
-									type="text"
-									className="form-control"
-									placeholder="Username"
-									value={username}
-									onChange={(e) =>
-										setUsername(e.target.value)
-									}
-								/>
-								<small>
-									{" "}
-									{errors.username && (
-										<div className="text-danger">
-											{" "}
-											{errors.username}{" "}
-										</div>
-									)}{" "}
-								</small>
-							</div>
-							<div className="mb-3">
-								<input
-									type="email"
-									className="form-control "
-									placeholder=" Email address"
-									value={email}
-									onChange={(e) => setEmail(e.target.value)}
-								/>
-							</div>
-							<div className="mb-3">
-								<input
-									type="password"
-									className="form-control"
-									placeholder="Create password"
-									value={password}
-									onChange={(e) =>
-										setPassword(e.target.value)
-									}
-								/>
+      localStorage.setItem("access_token", accessToken);
+      localStorage.setItem("refresh_token", refreshToken);
 
-								<small>
-									{" "}
-									{errors.password && (
-										<div className="text-danger">
-											{" "}
-											{errors.password}{" "}
-										</div>
-									)}{" "}
-								</small>
-							</div>
-							{success && (
-								<div className="alert alert-success">
-									Registration Successful
-								</div>
-							)}
-							{loading ? (
-								<button
-									type="submit"
-									className="btn btn-info d-block mx-auto"
-									disabled
-								>
-									{" "}
-                                    <FontAwesomeIcon icon={faSpinner} spin />
-									Please wait...{" "}
-								</button>
-							) : (
-								<button
-									type="submit"
-									className="btn btn-info d-block mx-auto"
-								>
-									{" "}
-									Register{" "}
-								</button>
-							)}
-						</form>
-					</div>
-				</div>
-			</div>
-		</>
-	);
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 2000);
+
+    } catch (err) {
+      console.error("Registration error:", err.response?.data);
+      setErrors(err.response?.data || { detail: "Unknown error" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="container my-5">
+      <div className="row justify-content-center">
+        <div className="col-md-6 bg-dark p-4 rounded">
+          <h3 className="text-light text-center mb-4">Create an account</h3>
+          <form onSubmit={handleRegistration}>
+            <input
+              type="text"
+              className="form-control mb-2"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+            {errors.username && <div className="text-danger">{errors.username}</div>}
+
+            <input
+              type="email"
+              className="form-control mb-2"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            {errors.email && <div className="text-danger">{errors.email}</div>}
+
+            <input
+              type="password"
+              className="form-control mb-2"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            {errors.password && <div className="text-danger">{errors.password}</div>}
+
+            {success && <div className="alert alert-success">Registration successful!</div>}
+
+            <button type="submit" className="btn btn-info w-100" disabled={loading}>
+              {loading ? <><FontAwesomeIcon icon={faSpinner} spin /> Please wait...</> : "Register"}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 };
+
 export default Register;
